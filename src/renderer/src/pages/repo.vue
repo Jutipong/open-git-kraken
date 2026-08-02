@@ -35,6 +35,24 @@
         void runAction(() => window.api.remote.fetch())
     }
 
+    /** Ctrl/Cmd+R — Fetch, Ctrl/Cmd+Shift+P — Push, Ctrl/Cmd+Shift+U — Pull (GitKraken-style shortcuts). */
+    function onKeydown(e: KeyboardEvent): void {
+        if (!(e.ctrlKey || e.metaKey) || e.altKey || e.repeat) return
+        const key = e.key.toLowerCase()
+        if (e.shiftKey) {
+            if (key === 'p') {
+                e.preventDefault()
+                if (!actionBusy.value) pushRemote()
+            } else if (key === 'u') {
+                e.preventDefault()
+                if (!actionBusy.value) pullRemote()
+            }
+        } else if (key === 'r') {
+            e.preventDefault()
+            if (!actionBusy.value) fetchRemote()
+        }
+    }
+
     function pullRemote(): void {
         void runAction(() => window.api.remote.pull({}))
     }
@@ -126,9 +144,13 @@
         stopListening = window.api.onRepoChanged(path => {
             if (path === store.path) void load()
         })
+        window.addEventListener('keydown', onKeydown)
     })
 
-    onUnmounted(() => stopListening?.())
+    onUnmounted(() => {
+        window.removeEventListener('keydown', onKeydown)
+        stopListening?.()
+    })
 </script>
 
 <template>
