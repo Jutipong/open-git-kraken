@@ -124,17 +124,20 @@
                     <span class="bg-ok h-3 w-3 rounded-sm" />
                     Working Directory
                 </div>
-                <div class="text-mute flex h-48 flex-col items-center justify-center gap-2">
+                <div
+                    v-if="loading"
+                    class="text-mute flex h-48 flex-col items-center justify-center gap-2">
                     <span class="i-lucide-git-commit-horizontal h-8 w-8" />
-                    <p class="m-0 text-sm">
-                        {{ loading ? 'Loading…' : `${store.commits.length} commits · ${store.localBranches.length} branches` }}
-                    </p>
-                    <p
-                        v-if="error"
-                        class="text-bad m-0 text-xs">
-                        {{ error }}
-                    </p>
+                    <p class="m-0 text-sm">Loading…</p>
                 </div>
+                <GraphCommitGraph
+                    v-else
+                    :commits="store.commits" />
+                <p
+                    v-if="error"
+                    class="text-bad m-0 px-3 py-2 text-xs">
+                    {{ error }}
+                </p>
             </main>
 
             <!-- Right: details panel -->

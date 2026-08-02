@@ -34,6 +34,7 @@ const LOG_FORMAT = {
     authorName: '%an',
     authorEmail: '%ae',
     authorDate: '%aI',
+    refs: '%D',
 } as const
 
 interface LogEntry {
@@ -44,6 +45,7 @@ interface LogEntry {
     authorName: string
     authorEmail: string
     authorDate: string
+    refs: string
 }
 
 function toError(err: unknown): string {
@@ -123,6 +125,7 @@ export class GitService {
                         authorName: entry.authorName,
                         authorEmail: entry.authorEmail,
                         authorDate: entry.authorDate,
+                        refs: entry.refs === '' ? [] : entry.refs.split(', '),
                     })
                 )
             } catch (err) {

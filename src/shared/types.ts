@@ -26,6 +26,8 @@ export interface Commit {
     authorName: string
     authorEmail: string
     authorDate: string
+    /** Ref names attached to this commit (`git log --decorate` output, e.g. `HEAD -> main`, `tag: v1.0`). */
+    refs: string[]
 }
 
 export interface FileStatus {
