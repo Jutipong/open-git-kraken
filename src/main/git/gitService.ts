@@ -159,14 +159,29 @@ export class GitService {
 
     diff(params: DiffParams = {}): Promise<Result<DiffData>> {
         return wrap(async () => {
-            const args: string[] = []
-            if (params.staged) args.push('--cached')
-            args.push('--')
-            if (params.file) args.push(params.file)
-            const content = await this.git.diff(args)
+            const content = await this.diffContent(params)
             const { added, removed } = countDiffLines(content)
             return { content, added, removed }
         })
+    }
+
+    private diffContent(params: DiffParams): Promise<string> {
+        if (params.commit) {
+            const parent = params.parents?.[0]
+            if (!parent) {
+                // Root commit has no parent: diff-tree `--root` diffs it against the empty tree (`git diff --root` is not a real mode).
+                const paths = params.file ? ['--', params.file] : ['--']
+                return this.git.raw(['diff-tree', '-p', '--no-commit-id', '--root', params.commit, ...paths])
+            }
+            // Commit diff vs its first parent (merge commits diff against the first parent, like GitHub/GitKraken).
+            const paths = params.file ? ['--', params.file] : ['--']
+            return this.git.diff([parent, params.commit, ...paths])
+        }
+        const args: string[] = []
+        if (params.staged) args.push('--cached')
+        args.push('--')
+        if (params.file) args.push(params.file)
+        return this.git.diff(args)
     }
 
     stage(params: StageParams): Promise<Result<null>> {

@@ -62,6 +62,10 @@ export interface LogParams {
 }
 
 export interface DiffParams {
+    /** Show the diff of this commit against its first parent (empty tree for root commits). */
+    commit?: string
+    /** Parent hashes of `commit`; the first one is used as the diff base. */
+    parents?: string[]
     file?: string
     staged?: boolean
 }

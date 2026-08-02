@@ -1,9 +1,40 @@
 <script setup lang="ts">
+    import type { Commit, DiffData } from '@shared/types'
+
     const { toggle } = useTheme()
     const store = useRepoStore()
     const loading = ref(true)
     const error = ref('')
     let stopListening: (() => void) | null = null
+
+    const activeTab = ref<'commit' | 'changes'>('commit')
+    const selectedHash = ref('')
+    const diff = ref<DiffData | null>(null)
+    const diffLoading = ref(false)
+    const diffError = ref('')
+
+    const selectedCommit = computed<Commit | null>(() => store.commits.find(c => c.hash === selectedHash.value) ?? null)
+
+    async function fetchDiff(commit: Commit | null): Promise<void> {
+        if (!commit) {
+            diff.value = null
+            diffError.value = ''
+            return
+        }
+        diffLoading.value = true
+        diffError.value = ''
+        const res = await window.api.diff.get({ commit: commit.hash, parents: commit.parents })
+        diffLoading.value = false
+        if (res.ok) diff.value = res.data
+        else {
+            diff.value = null
+            diffError.value = res.error
+        }
+    }
+
+    watch(selectedCommit, commit => {
+        void fetchDiff(commit)
+    })
 
     async function load(): Promise<void> {
         loading.value = true
@@ -132,7 +163,8 @@
                 </div>
                 <GraphCommitGraph
                     v-else
-                    :commits="store.commits" />
+                    :commits="store.commits"
+                    @select="selectedHash = $event" />
                 <p
                     v-if="error"
                     class="text-bad m-0 px-3 py-2 text-xs">
@@ -143,11 +175,50 @@
             <!-- Right: details panel -->
             <aside class="border-line bg-surface flex w-80 shrink-0 flex-col border-l">
                 <div class="border-line flex shrink-0 border-b">
-                    <button class="border-accent flex-1 border-b-2 px-3 py-2 text-sm font-semibold">Commit</button>
-                    <button class="text-mute flex-1 px-3 py-2 text-sm font-medium">Changes</button>
+                    <button
+                        :class="activeTab === 'commit' ? 'border-accent border-b-2 font-semibold' : 'text-mute font-medium'"
+                        class="flex-1 px-3 py-2 text-sm"
+                        @click="activeTab = 'commit'">
+                        Commit
+                    </button>
+                    <button
+                        :class="activeTab === 'changes' ? 'border-accent border-b-2 font-semibold' : 'text-mute font-medium'"
+                        class="flex-1 px-3 py-2 text-sm"
+                        @click="activeTab = 'changes'">
+                        Changes
+                    </button>
                 </div>
-                <div class="text-mute flex flex-1 items-center justify-center p-6 text-center text-sm">
-                    Select a commit to see its details (phase 5)
+                <template v-if="activeTab === 'commit'">
+                    <CommitCommitDetail
+                        v-if="selectedCommit"
+                        :commit="selectedCommit" />
+                    <div
+                        v-else
+                        class="text-mute flex flex-1 items-center justify-center p-6 text-center text-sm">
+                        Select a commit to see its details
+                    </div>
+                    <div
+                        v-if="selectedCommit"
+                        class="min-h-0 flex-1 overflow-y-auto">
+                        <div
+                            v-if="diffLoading"
+                            class="text-mute flex h-32 items-center justify-center text-xs">
+                            Loading diff…
+                        </div>
+                        <p
+                            v-else-if="diffError"
+                            class="text-bad m-0 px-3 py-2 text-xs">
+                            {{ diffError }}
+                        </p>
+                        <CommitDiffViewer
+                            v-else
+                            :diff="diff" />
+                    </div>
+                </template>
+                <div
+                    v-else
+                    class="text-mute flex flex-1 items-center justify-center p-6 text-center text-sm">
+                    Working directory changes (phase 7)
                 </div>
             </aside>
         </div>
