@@ -8,8 +8,37 @@ const api: RendererApi = {
         openFolder: () => ipcRenderer.invoke(CH.dialogOpenFolder) as Promise<string | null>,
     },
     repo: {
-        open: (path: string) => ipcRenderer.invoke(CH.repoOpen, path),
+        open: path => ipcRenderer.invoke(CH.repoOpen, path),
         recent: () => ipcRenderer.invoke(CH.repoRecent),
+    },
+    log: {
+        get: params => ipcRenderer.invoke(CH.logGet, params),
+    },
+    status: {
+        get: () => ipcRenderer.invoke(CH.statusGet),
+    },
+    diff: {
+        get: params => ipcRenderer.invoke(CH.diffGet, params),
+    },
+    stage: {
+        set: params => ipcRenderer.invoke(CH.stageSet, params),
+    },
+    discard: {
+        file: params => ipcRenderer.invoke(CH.discardFile, params),
+    },
+    commit: {
+        create: params => ipcRenderer.invoke(CH.commitCreate, params),
+    },
+    branch: {
+        list: () => ipcRenderer.invoke(CH.branchList),
+        checkout: name => ipcRenderer.invoke(CH.branchCheckout, name),
+        create: name => ipcRenderer.invoke(CH.branchCreate, name),
+        delete: name => ipcRenderer.invoke(CH.branchDelete, name),
+    },
+    remote: {
+        push: params => ipcRenderer.invoke(CH.remotePush, params),
+        pull: params => ipcRenderer.invoke(CH.remotePull, params),
+        fetch: () => ipcRenderer.invoke(CH.remoteFetch),
     },
     onRepoChanged: cb => {
         const listener = (_e: IpcRendererEvent, path: string): void => cb(path)

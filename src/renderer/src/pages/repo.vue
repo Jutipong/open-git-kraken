@@ -1,6 +1,39 @@
 <script setup lang="ts">
     const { toggle } = useTheme()
     const store = useRepoStore()
+    const loading = ref(true)
+    const error = ref('')
+    let stopListening: (() => void) | null = null
+
+    async function load(): Promise<void> {
+        loading.value = true
+        error.value = ''
+        const [statusRes, logRes, branchRes] = await Promise.all([
+            window.api.status.get(),
+            window.api.log.get({}),
+            window.api.branch.list(),
+        ])
+        if (statusRes.ok) {
+            store.status = statusRes.data
+            store.branch = statusRes.data.branch
+        } else {
+            error.value = statusRes.error
+        }
+        if (logRes.ok) store.commits = logRes.data
+        else error.value = logRes.error
+        if (branchRes.ok) store.localBranches = branchRes.data
+        else error.value = branchRes.error
+        loading.value = false
+    }
+
+    onMounted(() => {
+        void load()
+        stopListening = window.api.onRepoChanged(path => {
+            if (path === store.path) void load()
+        })
+    })
+
+    onUnmounted(() => stopListening?.())
 </script>
 
 <template>
@@ -55,7 +88,25 @@
             <aside class="border-line bg-surface flex w-60 shrink-0 flex-col border-r">
                 <section class="min-h-0 flex-1 overflow-y-auto p-2">
                     <h3 class="text-mute px-2 pb-1 text-xs font-semibold tracking-wide uppercase">Local Branches</h3>
-                    <p class="text-mute px-2 py-1 text-xs">No branches yet</p>
+                    <ul
+                        v-if="store.localBranches.length"
+                        class="space-y-0.5">
+                        <li
+                            v-for="b in store.localBranches"
+                            :key="b.name"
+                            class="hover:bg-raised text-mute hover:text-ink flex cursor-pointer items-center gap-1.5 rounded-md px-2 py-1 text-sm">
+                            <span class="i-lucide-git-branch h-3.5 w-3.5 shrink-0" />
+                            <span class="min-w-0 truncate">{{ b.name }}</span>
+                            <span
+                                v-if="b.current"
+                                class="bg-accent ml-auto h-1.5 w-1.5 shrink-0 rounded-full" />
+                        </li>
+                    </ul>
+                    <p
+                        v-else
+                        class="text-mute px-2 py-1 text-xs">
+                        {{ loading ? 'Loading…' : 'No branches yet' }}
+                    </p>
                 </section>
                 <section class="border-line min-h-0 flex-1 overflow-y-auto border-t p-2">
                     <h3 class="text-mute px-2 pb-1 text-xs font-semibold tracking-wide uppercase">Remote Branches</h3>
@@ -75,7 +126,14 @@
                 </div>
                 <div class="text-mute flex h-48 flex-col items-center justify-center gap-2">
                     <span class="i-lucide-git-commit-horizontal h-8 w-8" />
-                    <p class="m-0 text-sm">Commit graph comes in phase 3</p>
+                    <p class="m-0 text-sm">
+                        {{ loading ? 'Loading…' : `${store.commits.length} commits · ${store.localBranches.length} branches` }}
+                    </p>
+                    <p
+                        v-if="error"
+                        class="text-bad m-0 text-xs">
+                        {{ error }}
+                    </p>
                 </div>
             </main>
 

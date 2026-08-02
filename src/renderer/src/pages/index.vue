@@ -4,18 +4,28 @@
     const router = useRouter()
     const { toggle } = useTheme()
     const store = useRepoStore()
+    const error = ref('')
 
     async function openRepo(): Promise<void> {
         const path = await window.api.dialog.openFolder()
         if (!path) return
-        const state = await window.api.repo.open(path)
-        store.set(state)
-        router.push('/repo')
+        const result = await window.api.repo.open(path)
+        if (result.ok) {
+            store.set(result.data)
+            router.push('/repo')
+        } else {
+            error.value = result.error
+        }
     }
 </script>
 
 <template>
     <div class="flex h-full flex-col items-center justify-center gap-8 overflow-y-auto">
+        <p
+            v-if="error"
+            class="border-bad text-bad bg-bad/10 fixed top-4 left-1/2 -translate-x-1/2 rounded-md border px-4 py-2 text-sm">
+            {{ error }}
+        </p>
         <header class="flex flex-col items-center gap-2">
             <div class="flex items-center gap-3">
                 <span class="i-lucide-git-branch text-accent h-10 w-10" />
