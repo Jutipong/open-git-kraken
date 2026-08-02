@@ -35,7 +35,7 @@
         void runAction(() => window.api.remote.fetch())
     }
 
-    /** Ctrl/Cmd+R — Fetch, Ctrl/Cmd+Shift+P — Push, Ctrl/Cmd+Shift+U — Pull (GitKraken-style shortcuts). */
+    /** Ctrl/Cmd+R — Fetch, Ctrl/Cmd+Shift+P — Push, Ctrl/Cmd+Shift+L — Pull (GitKraken-style shortcuts). */
     function onKeydown(e: KeyboardEvent): void {
         if (!(e.ctrlKey || e.metaKey) || e.altKey || e.repeat) return
         const key = e.key.toLowerCase()
@@ -43,7 +43,7 @@
             if (key === 'p') {
                 e.preventDefault()
                 if (!actionBusy.value) pushRemote()
-            } else if (key === 'u') {
+            } else if (key === 'l') {
                 e.preventDefault()
                 if (!actionBusy.value) pullRemote()
             }
