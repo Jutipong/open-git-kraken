@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Crash dumps
+*.stackdump
+
+# Tooling
+.openclaude/
+
+# Original GitKraken installer (kept on disk, not tracked)
+GitKrakenSetup-6.5.1/
+
+# Auto-generated type declarations
+src/renderer/src/auto-imports.d.ts
+src/renderer/src/components.d.ts
+src/renderer/src/typed-router.d.ts

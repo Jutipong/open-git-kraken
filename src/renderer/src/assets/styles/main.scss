@@ -1,0 +1,92 @@
+// Palette sourced from HondryTravis/simple-dark (MIT):
+//   dark.json / light.json / light-soft.json
+// Accent/branch colors follow GitKraken brand hues (purple #6147FF, green #24D18F).
+
+:root {
+    color-scheme: dark;
+    --c-canvas: #202124;
+    --c-surface: #292a2d;
+    --c-raised: #35363a;
+    --c-line: #3c4043;
+    --c-ink: #d6d9de;
+    --c-mute: #8d949c;
+    --c-accent: #6147ff;
+    --c-ok: #24d18f;
+    --c-bad: #ff6347;
+    --c-warn: #ffb86c;
+    --c-b0: #6147ff;
+    --c-b1: #24d18f;
+    --c-b2: #ffb86c;
+    --c-b3: #00bfff;
+    --c-b4: #ff69b4;
+}
+
+:root.light {
+    color-scheme: light;
+    --c-canvas: #faf5e8;
+    --c-surface: #f3ecde;
+    --c-raised: #ffffff;
+    --c-line: #ebe4d5;
+    --c-ink: #3c4043;
+    --c-mute: #6f7680;
+    --c-accent: #6147ff;
+    --c-ok: #0e9f6e;
+    --c-bad: #d93025;
+    --c-warn: #bf5400;
+    --c-b0: #6147ff;
+    --c-b1: #0e9f6e;
+    --c-b2: #e37400;
+    --c-b3: #0277bd;
+    --c-b4: #c2185b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family:
+        system-ui,
+        -apple-system,
+        'Segoe UI',
+        Roboto,
+        sans-serif;
+    font-size: 13px;
+    background: var(--c-canvas);
+    color: var(--c-ink);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+code,
+pre,
+kbd {
+    font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--c-line);
+    border-radius: 5px;
+    border: 2px solid var(--c-canvas);
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::selection {
+    background: var(--c-accent);
+    color: #fff;
+}

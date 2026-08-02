@@ -1,0 +1,9 @@
+# Build outputs
+out/
+dist/
+node_modules/
+
+# Generated declaration files (don't format/parse)
+src/renderer/src/auto-imports.d.ts
+src/renderer/src/components.d.ts
+src/renderer/src/typed-router.d.ts

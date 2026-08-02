@@ -1,0 +1,39 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "target": "ES2022",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "types": ["unplugin-vue-router/client"],
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "jsx": "preserve",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/renderer/src/*"],
+            "@components/*": ["src/renderer/src/components/*"],
+            "@utils/*": ["src/renderer/src/utils/*"],
+            "@stores/*": ["src/renderer/src/stores/*"],
+            "@types/*": ["src/renderer/src/types/*"],
+            "@styles/*": ["src/renderer/src/assets/styles/*"],
+            "@assets/*": ["src/renderer/src/assets/*"],
+            "@shared/*": ["src/shared/*"]
+        }
+    },
+    "include": [
+        "src/renderer/src/**/*",
+        "src/renderer/src/**/*.vue",
+        "src/shared/**/*",
+        "src/renderer/src/env.d.ts",
+        "src/renderer/src/auto-imports.d.ts",
+        "src/renderer/src/components.d.ts",
+        "src/renderer/src/typed-router.d.ts"
+    ]
+}
