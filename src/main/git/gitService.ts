@@ -201,8 +201,14 @@ export class GitService {
 
     commit(params: CommitParams): Promise<Result<null>> {
         return wrap(async () => {
-            if (params.amend) await this.git.commit(params.message, [], { '--amend': null, '--no-edit': null })
-            else await this.git.commit(params.message)
+            if (params.amend) {
+                // `--amend --no-edit` keeps the previous message; only pass `-m` when a new one is given.
+                const args = ['commit', '--amend', '--no-edit']
+                if (params.message.trim() !== '') args.push('-m', params.message)
+                await this.git.raw(args)
+            } else {
+                await this.git.raw(['commit', '-m', params.message])
+            }
             return null
         })
     }

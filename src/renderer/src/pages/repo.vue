@@ -151,7 +151,10 @@
 
             <!-- Center: commit graph -->
             <main class="min-w-0 flex-1 overflow-y-auto">
-                <div class="border-line bg-canvas flex h-9 items-center gap-2 border-b px-3 text-sm font-semibold">
+                <div
+                    class="border-line bg-canvas hover:bg-raised flex h-9 cursor-pointer items-center gap-2 border-b px-3 text-sm font-semibold"
+                    title="Show working directory changes"
+                    @click="activeTab = 'changes'">
                     <span class="bg-ok h-3 w-3 rounded-sm" />
                     Working Directory
                 </div>
@@ -217,8 +220,8 @@
                 </template>
                 <div
                     v-else
-                    class="text-mute flex flex-1 items-center justify-center p-6 text-center text-sm">
-                    Working directory changes (phase 7)
+                    class="min-h-0 flex-1">
+                    <WorkingDirChangesPanel />
                 </div>
             </aside>
         </div>
