@@ -8,6 +8,8 @@ export const useRepoStore = defineStore('repo', () => {
     const commits = ref<Commit[]>([])
     const status = ref<StatusData | null>(null)
     const localBranches = ref<BranchInfo[]>([])
+    const remoteBranches = ref<BranchInfo[]>([])
+    const tags = ref<string[]>([])
 
     function set(state: RepoState): void {
         path.value = state.path
@@ -16,5 +18,5 @@ export const useRepoStore = defineStore('repo', () => {
         branches.value = state.branches
     }
 
-    return { path, name, branch, branches, commits, status, localBranches, set }
+    return { path, name, branch, branches, commits, status, localBranches, remoteBranches, tags, set }
 })

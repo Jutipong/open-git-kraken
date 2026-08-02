@@ -106,6 +106,17 @@ export function registerIpc(): void {
         return result
     })
 
+    ipcMain.handle(CH.branchRemote, event => getService(event).listRemoteBranches())
+
+    ipcMain.handle(CH.branchCheckoutRemote, async (event, name: string) => {
+        const service = getService(event)
+        const result = await service.checkoutRemote(name)
+        if (result.ok) notifyChanged(service.path)
+        return result
+    })
+
+    ipcMain.handle(CH.tagList, event => getService(event).listTags())
+
     ipcMain.handle(CH.remotePush, async (event, params: PushParams) => {
         const service = getService(event)
         const result = await service.push(params)

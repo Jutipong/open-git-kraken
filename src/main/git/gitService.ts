@@ -215,17 +215,46 @@ export class GitService {
 
     listBranches(): Promise<Result<BranchInfo[]>> {
         return wrap(async () => {
+            // simple-git runs `git branch -v -a`, which also lists remote-tracking refs
+            // (`remotes/origin/*`); drop them so only true local branches are returned.
             const res = await this.git.branch()
+            return res.all
+                .filter(name => !name.startsWith('remotes/'))
+                .map((name): BranchInfo => {
+                    const branch = res.branches[name]
+                    return { name, current: res.current === name, commit: branch?.commit ?? '' }
+                })
+        })
+    }
+
+    listRemoteBranches(): Promise<Result<BranchInfo[]>> {
+        return wrap(async () => {
+            const res = await this.git.branch(['-r'])
             return res.all.map((name): BranchInfo => {
                 const branch = res.branches[name]
-                return { name, current: res.current === name, commit: branch?.commit ?? '' }
+                return { name, current: false, commit: branch?.commit ?? '' }
             })
+        })
+    }
+
+    listTags(): Promise<Result<string[]>> {
+        return wrap(async () => {
+            const res = await this.git.tags()
+            return res.all
         })
     }
 
     checkout(name: string): Promise<Result<null>> {
         return wrap(async () => {
             await this.git.checkout(name)
+            return null
+        })
+    }
+
+    /** Checks out a remote-tracking branch as a new local tracking branch (e.g. `origin/foo` → local `foo`). */
+    checkoutRemote(name: string): Promise<Result<null>> {
+        return wrap(async () => {
+            await this.git.raw(['checkout', '--track', name])
             return null
         })
     }

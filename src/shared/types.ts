@@ -123,8 +123,13 @@ export interface RendererApi {
     branch: {
         list(): Promise<Result<BranchInfo[]>>
         checkout(name: string): Promise<Result<null>>
+        checkoutRemote(name: string): Promise<Result<null>>
         create(name: string): Promise<Result<null>>
         delete(name: string): Promise<Result<null>>
+        remote(): Promise<Result<BranchInfo[]>>
+    }
+    tag: {
+        list(): Promise<Result<string[]>>
     }
     remote: {
         push(params: PushParams): Promise<Result<null>>

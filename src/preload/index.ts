@@ -34,8 +34,13 @@ const api: RendererApi = {
     branch: {
         list: () => ipcRenderer.invoke(CH.branchList),
         checkout: name => ipcRenderer.invoke(CH.branchCheckout, name),
+        checkoutRemote: name => ipcRenderer.invoke(CH.branchCheckoutRemote, name),
         create: name => ipcRenderer.invoke(CH.branchCreate, name),
         delete: name => ipcRenderer.invoke(CH.branchDelete, name),
+        remote: () => ipcRenderer.invoke(CH.branchRemote),
+    },
+    tag: {
+        list: () => ipcRenderer.invoke(CH.tagList),
     },
     remote: {
         push: params => ipcRenderer.invoke(CH.remotePush, params),
