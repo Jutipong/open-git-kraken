@@ -2,8 +2,9 @@ import { CH } from '@shared/channels'
 import { BrowserWindow, dialog, ipcMain, type IpcMainInvokeEvent } from 'electron'
 
 import { GitService } from '../git/gitService'
+import { addRecent, getRecents, removeRecent } from '../recents'
 
-import type { CommitParams, DiffParams, DiscardParams, LogParams, PullParams, PushParams, RecentRepo, StageParams } from '@shared/types'
+import type { CloneParams, CommitParams, DiffParams, DiscardParams, LogParams, PullParams, PushParams, StageParams } from '@shared/types'
 
 const services = new Map<string, GitService>()
 /** WebContents id -> active repo path, set by `repo:open`. */
@@ -33,12 +34,29 @@ export function registerIpc(): void {
 
     ipcMain.handle(CH.repoOpen, async (event, path: string) => {
         const result = await GitService.open(path)
-        if (result.ok) activePaths.set(event.sender.id, path)
+        if (result.ok) {
+            activePaths.set(event.sender.id, path)
+            addRecent(path, result.data.name)
+        }
         return result
     })
 
-    // Phase 3 (recents in userData) replaces this placeholder.
-    ipcMain.handle(CH.repoRecent, (): RecentRepo[] => [])
+    ipcMain.handle(CH.repoClone, async (event, params: CloneParams) => {
+        const result = await GitService.clone(params.url, params.dir)
+        if (result.ok) {
+            activePaths.set(event.sender.id, params.dir)
+            addRecent(params.dir, result.data.name)
+            notifyChanged(params.dir)
+        }
+        return result
+    })
+
+    ipcMain.handle(CH.repoRecent, () => getRecents())
+
+    ipcMain.handle(CH.repoRemoveRecent, (_event, path: string) => {
+        removeRecent(path)
+        return { ok: true, data: null } as const
+    })
 
     ipcMain.handle(CH.logGet, (event, params: LogParams) => getService(event).log(params))
     ipcMain.handle(CH.statusGet, event => getService(event).status())

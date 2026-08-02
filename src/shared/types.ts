@@ -13,6 +13,11 @@ export interface RecentRepo {
     lastOpened: number
 }
 
+export interface CloneParams {
+    url: string
+    dir: string
+}
+
 export interface Commit {
     hash: string
     parents: string[]
@@ -87,7 +92,9 @@ export interface RendererApi {
     }
     repo: {
         open(path: string): Promise<Result<RepoState>>
+        clone(params: CloneParams): Promise<Result<RepoState>>
         recent(): Promise<RecentRepo[]>
+        removeRecent(path: string): Promise<Result<null>>
     }
     log: {
         get(params: LogParams): Promise<Result<Commit[]>>

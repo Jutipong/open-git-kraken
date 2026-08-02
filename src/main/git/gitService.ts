@@ -1,4 +1,5 @@
-import { basename } from 'node:path'
+import { mkdir } from 'node:fs/promises'
+import { basename, dirname } from 'node:path'
 
 import { simpleGit, type LogOptions, type SimpleGit } from 'simple-git'
 
@@ -75,6 +76,17 @@ export class GitService {
     constructor(path: string) {
         this.path = path
         this.git = simpleGit({ baseDir: path, config: [SAFE_DIRECTORY_CONFIG] })
+    }
+
+    /** Clones `url` into `dir` (created if needed) and builds the repo state. */
+    static async clone(url: string, dir: string): Promise<Result<RepoState>> {
+        try {
+            await mkdir(dirname(dir), { recursive: true })
+            await simpleGit({ baseDir: dirname(dir), config: [SAFE_DIRECTORY_CONFIG] }).clone(url, dir)
+        } catch (err) {
+            return { ok: false, error: toError(err) }
+        }
+        return GitService.open(dir)
     }
 
     /** Validates `path` is a git work tree and builds the initial repo state. */

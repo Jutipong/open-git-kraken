@@ -1,7 +1,9 @@
 export const CH = {
     dialogOpenFolder: 'dialog:openFolder',
     repoOpen: 'repo:open',
+    repoClone: 'repo:clone',
     repoRecent: 'repo:recent',
+    repoRemoveRecent: 'repo:removeRecent',
     repoChanged: 'git:repo:changed',
     logGet: 'log:get',
     statusGet: 'status:get',

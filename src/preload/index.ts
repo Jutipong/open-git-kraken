@@ -9,7 +9,9 @@ const api: RendererApi = {
     },
     repo: {
         open: path => ipcRenderer.invoke(CH.repoOpen, path),
+        clone: params => ipcRenderer.invoke(CH.repoClone, params),
         recent: () => ipcRenderer.invoke(CH.repoRecent),
+        removeRecent: path => ipcRenderer.invoke(CH.repoRemoveRecent, path),
     },
     log: {
         get: params => ipcRenderer.invoke(CH.logGet, params),
